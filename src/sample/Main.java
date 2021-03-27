@@ -20,6 +20,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +37,15 @@ public class Main extends Application {
 
         Rect size = new Rect();
 
-        //Group imageGroup1 = loadImageIntoGroup("Z:\\FIRST\\2020-2021\\pictures\\NoRings_innerLine_center.png", size);
-        Group imageGroup1 = loadImageIntoGroup("Z:\\FIRST\\2020-2021\\pictures\\1Ring_InnerLine_Centered.png", size);
-        //Group imageGroup3 = loadImageIntoGroup("Z:\\FIRST\\2020-2021\\pictures\\4Rings_InnerLine_Centered.png",size);
-        //Group imageGroup = new Group(imageGroup1, imageGroup2, imageGroup3);
+        String fileName = "image1.png";
+
+        Path currentRelativePath = Paths.get("");
+        String s = currentRelativePath.toAbsolutePath().toString();
+
+        String filePath = String.format("%s\\src\\images\\%s", s, fileName);
+
+        Group imageGroup1 = loadImageIntoGroup(filePath, size);
+
         Group root = new Group(imageGroup1);
 
         primaryStage.setTitle("openCvExample");
@@ -58,12 +65,8 @@ public class Main extends Application {
         Mat image = Imgcodecs.imread(filename);
         Size size = image.size();
 
-        List<Mat> planes = new ArrayList<Mat>();
-        Core.split(image, planes);
-
         //Encoding the image
-        MatOfByte matOfByte = new MatOfByte();
-        Imgcodecs.imencode(".png", image, matOfByte);
+        MatOfByte matOfByte = encode(image);
 
         //Storing the encoded Mat in a byte array
         byte[] byteArray = matOfByte.toArray();
@@ -88,4 +91,15 @@ public class Main extends Application {
         return imageGroup;
     }
 
+    private MatOfByte encode(Mat image) {
+
+        List<Mat> planes = new ArrayList<>();
+        Core.split(image, planes);
+
+        //Encoding the image
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".png", planes.get(1), matOfByte);
+
+        return matOfByte;
+    }
 }
